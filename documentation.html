@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>NEXUS RP — Documentation Technique</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:#030508; --bg2:#070d14; --bg3:#0b1520;
+      --cyan:#00f0ff; --green:#00ff88; --gold:#ffd700; --red:#ff2255; --orange:#ff8c00;
+      --txt:#c8e8f8; --dim:#4a7090; --bright:#e8f8ff;
+      --bd:rgba(0,240,255,0.2); --bd2:rgba(0,240,255,0.07);
+      --mono:'Share Tech Mono',monospace; --title:'Orbitron',sans-serif; --ui:'Rajdhani',sans-serif;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);color:var(--txt);font-family:var(--ui);font-size:15px;line-height:1.7}
+    body::before{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;
+      background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px)}
+
+    /* Layout */
+    .layout{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
+    @media(max-width:900px){.layout{grid-template-columns:1fr}}
+
+    /* Sidebar */
+    .sidebar{position:sticky;top:0;height:100vh;overflow-y:auto;
+      background:var(--bg2);border-right:1px solid var(--bd2);padding:28px 0}
+    .sidebar-brand{font-family:var(--title);font-size:22px;color:var(--cyan);letter-spacing:4px;
+      padding:0 24px;margin-bottom:8px;text-shadow:0 0 15px var(--cyan)}
+    .sidebar-sub{font-family:var(--mono);font-size:9px;color:var(--dim);letter-spacing:2px;padding:0 24px;margin-bottom:28px}
+    .sidebar-group{margin-bottom:20px}
+    .sidebar-group-label{font-family:var(--mono);font-size:9px;color:var(--dim);letter-spacing:3px;
+      padding:0 24px;margin-bottom:8px;text-transform:uppercase}
+    .sidebar a{display:block;padding:9px 24px;font-family:var(--ui);font-size:13px;font-weight:600;
+      color:var(--dim);text-decoration:none;letter-spacing:1px;border-left:2px solid transparent;transition:all .2s}
+    .sidebar a:hover{color:var(--cyan);border-left-color:var(--cyan);background:rgba(0,240,255,.04)}
+
+    /* Main */
+    .main{padding:48px 56px;max-width:960px}
+    @media(max-width:900px){.main{padding:28px 20px}}
+
+    /* Headings */
+    h1{font-family:var(--title);font-size:36px;font-weight:900;color:var(--bright);letter-spacing:4px;margin-bottom:8px}
+    h2{font-family:var(--title);font-size:22px;color:var(--cyan);letter-spacing:3px;margin:48px 0 16px;
+      padding-bottom:10px;border-bottom:1px solid var(--bd2)}
+    h3{font-family:var(--ui);font-size:17px;font-weight:700;color:var(--bright);margin:28px 0 10px}
+    h4{font-family:var(--mono);font-size:13px;color:var(--gold);margin:20px 0 8px;letter-spacing:2px}
+    p{color:var(--txt);margin-bottom:14px}
+    ul,ol{padding-left:22px;margin-bottom:14px}
+    li{color:var(--dim);margin-bottom:6px;line-height:1.7}
+    li strong{color:var(--txt)}
+    strong{color:var(--bright)}
+    code{font-family:var(--mono);font-size:12px;background:var(--bg3);color:var(--cyan);padding:2px 7px;border:1px solid var(--bd2)}
+
+    /* Code blocks */
+    pre{background:var(--bg2);border:1px solid var(--bd2);padding:20px 24px;overflow-x:auto;margin-bottom:20px;position:relative}
+    pre code{background:none;border:none;padding:0;font-size:12px;color:var(--txt);line-height:1.8}
+    .pre-label{font-family:var(--mono);font-size:9px;color:var(--dim);letter-spacing:2px;margin-bottom:10px}
+
+    /* Tags */
+    .tag{display:inline-block;padding:2px 10px;font-family:var(--mono);font-size:9px;letter-spacing:2px;border:1px solid;margin:2px}
+    .tag-cyan{color:var(--cyan);border-color:rgba(0,240,255,.4)}
+    .tag-green{color:var(--green);border-color:rgba(0,255,136,.4)}
+    .tag-gold{color:var(--gold);border-color:rgba(255,215,0,.4)}
+    .tag-red{color:var(--red);border-color:rgba(255,34,85,.4)}
+
+    /* Table */
+    table{width:100%;border-collapse:collapse;margin-bottom:24px}
+    th{padding:10px 14px;font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--dim);border-bottom:1px solid var(--bd2);text-align:left}
+    td{padding:12px 14px;border-bottom:1px solid var(--bd2);font-size:13px;vertical-align:top}
+    td:first-child{font-family:var(--mono);font-size:12px;color:var(--cyan);white-space:nowrap}
+    td:last-child{color:var(--dim)}
+
+    /* Info box */
+    .info-box{background:var(--bg3);border-left:3px solid var(--cyan);padding:16px 20px;margin-bottom:20px}
+    .info-box.warn{border-left-color:var(--gold)}
+    .info-box.tip{border-left-color:var(--green)}
+    .info-box p{margin-bottom:0}
+
+    /* Divider */
+    hr{border:none;border-top:1px solid var(--bd2);margin:40px 0}
+
+    /* Section anchor padding */
+    section{scroll-margin-top:20px}
+
+    ::-webkit-scrollbar{width:5px}
+    ::-webkit-scrollbar-track{background:var(--bg)}
+    ::-webkit-scrollbar-thumb{background:var(--bd)}
+  </style>
+</head>
+<body>
+<div class="layout">
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-brand">NEXUS</div>
+  <div class="sidebar-sub">DOCUMENTATION TECHNIQUE</div>
+  <div class="sidebar-group">
+    <div class="sidebar-group-label">APERÇU</div>
+    <a href="#intro">Introduction</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#fichiers">Structure des fichiers</a>
+  </div>
+  <div class="sidebar-group">
+    <div class="sidebar-group-label">CSS</div>
+    <a href="#css-variables">Variables CSS</a>
+    <a href="#css-layout">Layout & Pages</a>
+    <a href="#css-components">Composants UI</a>
+    <a href="#css-animations">Animations</a>
+  </div>
+  <div class="sidebar-group">
+    <div class="sidebar-group-label">BASE DE DONNÉES</div>
+    <a href="#db-schema">Schéma utilisateur</a>
+    <a href="#db-api">API localStorage</a>
+    <a href="#db-session">Sessions</a>
+    <a href="#db-securite">Sécurité</a>
+  </div>
+  <div class="sidebar-group">
+    <div class="sidebar-group-label">JAVASCRIPT</div>
+    <a href="#js-auth">Authentification</a>
+    <a href="#js-navigation">Navigation</a>
+    <a href="#js-profil">Profil</a>
+    <a href="#js-membres">Membres</a>
+    <a href="#js-admin">Admin</a>
+    <a href="#js-utils">Utilitaires</a>
+  </div>
+  <div class="sidebar-group">
+    <div class="sidebar-group-label">RÉFÉRENCE</div>
+    <a href="#site-chl">Analyse site CHL</a>
+    <a href="#evolution">Évolution future</a>
+    <a href="#compte-admin">Compte admin</a>
+  </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+
+  <!-- INTRO -->
+  <section id="intro">
+    <h1>DOC TECHNIQUE</h1>
+    <p style="font-family:var(--mono);font-size:11px;color:var(--dim);letter-spacing:2px;margin-bottom:32px">
+      NEXUS RP NETWORK // PLATEFORME COLLABORATEURS // v2.4.1
+    </p>
+    <p>
+      Ce document décrit l'ensemble du code de la plateforme <strong>NEXUS RP</strong>, conçue pour permettre aux collaborateurs
+      d'un serveur GTA RP de se connecter avec un compte personnel, gérer leur profil, consulter l'annuaire des membres,
+      et accéder au règlement.
+    </p>
+    <div class="info-box">
+      <p>🧠 <strong>Technologie</strong> : HTML5 + CSS3 + JavaScript pur (Vanilla JS). Aucun framework externe requis.
+      La base de données utilise le <code>localStorage</code> du navigateur — parfait pour un hébergement statique
+      type GitHub Pages (comme le site CHL original).</p>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px">
+      <span class="tag tag-cyan">HTML5</span>
+      <span class="tag tag-cyan">CSS3</span>
+      <span class="tag tag-cyan">VANILLA JS</span>
+      <span class="tag tag-green">LOCALSTORAGE DB</span>
+      <span class="tag tag-green">SESSIONS</span>
+      <span class="tag tag-gold">DARK UI</span>
+      <span class="tag tag-gold">RESPONSIVE</span>
+    </div>
+  </section>
+
+  <hr/>
+
+  <!-- ARCHITECTURE -->
+  <section id="architecture">
+    <h2>ARCHITECTURE</h2>
+    <p>
+      La plateforme fonctionne entièrement côté client (frontend-only). Tout le code est dans un seul fichier
+      <code>index.html</code> contenant les blocs HTML, CSS et JavaScript.
+    </p>
+    <h3>Flux général</h3>
+    <pre><code>Utilisateur ouvre le site
+       │
+       ├─ Session active dans sessionStorage ?
+       │     ├─ OUI → affiche le Dashboard directement
+       │     └─ NON → affiche la page Login
+       │
+ [Page Login]
+       │
+       ├─ Onglet CONNEXION → handleLogin()
+       │     ├─ Vérifie username + password (vs localStorage)
+       │     ├─ Crée une session (sessionStorage)
+       │     └─ showDashboard()
+       │
+       └─ Onglet INSCRIPTION → handleRegister()
+             ├─ Valide les champs
+             ├─ Crée un objet user dans localStorage
+             └─ Message de succès → redirection vers Connexion
+
+ [Dashboard]
+       │
+       ├─ /home      → stats + annonces
+       ├─ /profil    → fiche perso + formulaire edit
+       ├─ /membres   → tableau + recherche + filtres
+       ├─ /reglement → accordion règles
+       └─ /admin     → (admin only) gestion comptes</code></pre>
+  </section>
+
+  <!-- FICHIERS -->
+  <section id="fichiers">
+    <h2>STRUCTURE DES FICHIERS</h2>
+    <pre><code>nexus-rp/
+├── index.html        ← Toute la plateforme (HTML + CSS + JS)
+└── documentation.html ← Ce fichier</code></pre>
+    <div class="info-box tip">
+      <p>💡 Pour héberger sur <strong>GitHub Pages</strong> : créez un repo, pushez <code>index.html</code> à la racine,
+      activez Pages dans les Settings → Source : main branch. C'est tout.</p>
+    </div>
+  </section>
+
+  <hr/>
+
+  <!-- CSS VARIABLES -->
+  <section id="css-variables">
+    <h2>CSS — VARIABLES</h2>
+    <p>Toutes les couleurs et polices sont centralisées dans <code>:root</code> pour une maintenance facile.</p>
+    <pre><code>:root {
+  /* Couleurs de fond */
+  --bg-deep:    #030508;    /* fond principal ultra-sombre */
+  --bg-panel:   #070d14;    /* fond des panneaux */
+  --bg-card:    #0b1520;    /* fond des cartes */
+  --bg-input:   #060e18;    /* fond des inputs */
+
+  /* Couleurs néon */
+  --neon-cyan:  #00f0ff;    /* couleur principale — accent */
+  --neon-green: #00ff88;    /* succès / en ligne */
+  --neon-red:   #ff2255;    /* erreur / danger */
+  --neon-gold:  #ffd700;    /* admin / premium */
+  --neon-orange:#ff8c00;    /* modérateur / warning */
+
+  /* Texte */
+  --text-primary: #c8e8f8;  /* texte standard */
+  --text-dim:     #4a7090;  /* texte secondaire */
+  --text-bright:  #e8f8ff;  /* texte titres */
+
+  /* Bordures */
+  --border-glow: rgba(0,240,255,0.25); /* bordure visible */
+  --border-dim:  rgba(0,240,255,0.08); /* bordure subtile */
+
+  /* Ombres */
+  --shadow-cyan:  0 0 20px rgba(0,240,255,0.3);
+  --shadow-green: 0 0 20px rgba(0,255,136,0.3);
+
+  /* Polices */
+  --font-mono:  'Share Tech Mono', monospace; /* terminal */
+  --font-title: 'Orbitron', sans-serif;       /* titres sci-fi */
+  --font-ui:    'Rajdhani', sans-serif;       /* interface */
+}</code></pre>
+    <h4>POURQUOI CES POLICES ?</h4>
+    <ul>
+      <li><strong>Share Tech Mono</strong> — Donne un aspect terminal/hacker pour les données et identifiants</li>
+      <li><strong>Orbitron</strong> — Police sci-fi géométrique, parfaite pour les logos et titres (inspirée du site CHL)</li>
+      <li><strong>Rajdhani</strong> — Police militaire/UI moderne pour les boutons et labels</li>
+    </ul>
+  </section>
+
+  <!-- CSS LAYOUT -->
+  <section id="css-layout">
+    <h2>CSS — LAYOUT & PAGES</h2>
+    <h3>Système de pages</h3>
+    <p>Chaque "page" est un <code>&lt;div class="page"&gt;</code>. Seul l'élément avec la classe <code>active</code> est visible.</p>
+    <pre><code>.page { display: none; }
+.page.active { display: flex; }
+
+/* Changer de page en JS : */
+function showPage(id) {
+  document.querySelectorAll('.page')
+    .forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}</code></pre>
+    <h3>Système de sous-pages (Dashboard)</h3>
+    <p>Même logique pour les sections dans le dashboard. Les nav-links activent <code>.subpage.active</code>.</p>
+    <pre><code>.subpage { display: none; }
+.subpage.active { display: block; }
+
+function navTo(section, btn) {
+  document.querySelectorAll('.nav-link')
+    .forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.subpage')
+    .forEach(s => s.classList.remove('active'));
+  document.getElementById('sub-' + section).classList.add('active');
+}</code></pre>
+    <h3>Grille de fond animée</h3>
+    <pre><code>.grid-bg {
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(rgba(0,240,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,240,255,0.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+  animation: gridShift 20s linear infinite;
+}
+@keyframes gridShift {
+  0%   { background-position: 0 0; }
+  100% { background-position: 60px 60px; }
+}</code></pre>
+    <h3>Effet scanlines (overlay)</h3>
+    <pre><code>body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 9999;
+  pointer-events: none; /* ne bloque pas les clics */
+  background: repeating-linear-gradient(
+    0deg,
+    transparent, transparent 2px,
+    rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px
+  );
+}</code></pre>
+  </section>
+
+  <!-- CSS COMPONENTS -->
+  <section id="css-components">
+    <h2>CSS — COMPOSANTS UI</h2>
+    <h3>Bouton primaire avec effet sweep</h3>
+    <pre><code>.btn-primary {
+  border: 1px solid var(--neon-cyan);
+  background: transparent;
+  color: var(--neon-cyan);
+  position: relative; overflow: hidden;
+}
+/* Effet de balayage lumineux au hover */
+.btn-primary::before {
+  content: '';
+  position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0,240,255,0.15), transparent);
+  transition: left 0.5s;
+}
+.btn-primary:hover::before { left: 100%; }</code></pre>
+    <h3>Input avec focus néon</h3>
+    <pre><code>.form-input {
+  background: var(--bg-input);
+  border: 1px solid var(--border-dim);
+  transition: all 0.3s;
+}
+.form-input:focus {
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 12px rgba(0,240,255,0.2);
+  outline: none;
+}</code></pre>
+    <h3>Coins décoratifs CSS pur</h3>
+    <pre><code>.corner { position: fixed; width: 50px; height: 50px; pointer-events: none; }
+.corner::before { content: ''; width: 2px; height: 30px; background: var(--neon-cyan); }
+.corner::after  { content: ''; width: 30px; height: 2px; background: var(--neon-cyan); }
+/* Positionnement : tl, tr, bl, br via transform: scaleX(-1) etc. */</code></pre>
+  </section>
+
+  <!-- CSS ANIMATIONS -->
+  <section id="css-animations">
+    <h2>CSS — ANIMATIONS</h2>
+    <table>
+      <thead><tr><th>Nom</th><th>Élément</th><th>Effet</th></tr></thead>
+      <tbody>
+        <tr><td>logoGlitch</td><td>Logo NEXUS</td><td>Glitch visuel aléatoire (translate + hue-rotate)</td></tr>
+        <tr><td>gridShift</td><td>Grille de fond</td><td>Défilement infini de la grille</td></tr>
+        <tr><td>pulse</td><td>Points de status</td><td>Clignotement opacity 1 → 0.4</td></tr>
+        <tr><td>spin</td><td>Spinner loading</td><td>Rotation 360° continue</td></tr>
+      </tbody>
+    </table>
+    <pre><code>/* Glitch du logo — déclenché toutes les 6 secondes */
+@keyframes logoGlitch {
+  0%,94%,100% { transform: translate(0); filter: none; }
+  95% { transform: translate(-2px, 1px); filter: hue-rotate(90deg); }
+  96% { transform: translate(2px, -1px); filter: hue-rotate(-90deg); }
+  97% { transform: translate(0); filter: none; }
+}</code></pre>
+  </section>
+
+  <hr/>
+
+  <!-- DB SCHEMA -->
+  <section id="db-schema">
+    <h2>BASE DE DONNÉES — SCHÉMA</h2>
+    <p>Chaque utilisateur est un objet JSON stocké dans un tableau dans <code>localStorage</code>.</p>
+    <pre><code>// Exemple d'objet utilisateur complet
+{
+  "id":        "USRLKJ2H4A",         // identifiant unique auto-généré
+  "username":  "neo_smith",           // pseudo (identifiant de connexion)
+  "password":  "bmVvMTIz",           // mot de passe encodé en base64
+  "ic":        "Niko Bellic",         // nom du personnage en jeu
+  "faction":   "LSPD — Police",       // faction/service
+  "discord":   "neo#1234",            // identifiant Discord
+  "role":      "membre",              // "membre" | "moderateur" | "admin"
+  "bio":       "Officier LSPD...",    // note personnelle
+  "createdAt": "15/01/2025"           // date d'inscription
+}</code></pre>
+    <h4>CLÉS localStorage</h4>
+    <table>
+      <thead><tr><th>Clé</th><th>Type</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>nexus_users</td><td>JSON Array</td><td>Tableau de tous les utilisateurs</td></tr>
+      </tbody>
+    </table>
+    <h4>CLÉS sessionStorage</h4>
+    <table>
+      <thead><tr><th>Clé</th><th>Type</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>nexus_session</td><td>JSON Object</td><td>Utilisateur connecté (vidé à la fermeture du navigateur)</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- DB API -->
+  <section id="db-api">
+    <h2>BASE DE DONNÉES — API</h2>
+    <p>L'objet <code>DB</code> est le seul point d'accès aux données. Toutes les opérations passent par lui.</p>
+    <pre><code>const DB = {
+  // Lire tous les users
+  getUsers() {
+    return JSON.parse(localStorage.getItem('nexus_users') || '[]');
+  },
+  // Sauvegarder le tableau complet
+  saveUsers(users) {
+    localStorage.setItem('nexus_users', JSON.stringify(users));
+  },
+  // Trouver par username
+  getUserByUsername(username) {
+    return this.getUsers()
+      .find(u => u.username.toLowerCase() === username.toLowerCase());
+  },
+  // Créer un nouveau compte
+  createUser(data) {
+    const users = this.getUsers();
+    const user = {
+      id:        'USR' + Date.now().toString(36).toUpperCase(),
+      username:  data.username,
+      password:  btoa(data.password),  // encodage base64
+      ic:        data.ic || '',
+      faction:   data.faction || 'Civil',
+      discord:   data.discord || '',
+      role:      'membre',
+      bio:       '',
+      createdAt: new Date().toLocaleDateString('fr-FR')
+    };
+    users.push(user);
+    this.saveUsers(users);
+    return user;
+  },
+  // Mettre à jour un user (merge partiel)
+  updateUser(username, updates) {
+    const users = this.getUsers();
+    const idx = users.findIndex(
+      u => u.username.toLowerCase() === username.toLowerCase()
+    );
+    if (idx === -1) return false;
+    users[idx] = { ...users[idx], ...updates };
+    this.saveUsers(users);
+    return users[idx];
+  },
+  // Supprimer un user
+  deleteUser(username) {
+    let users = this.getUsers()
+      .filter(u => u.username.toLowerCase() !== username.toLowerCase());
+    this.saveUsers(users);
+  }
+};</code></pre>
+  </section>
+
+  <!-- DB SESSION -->
+  <section id="db-session">
+    <h2>BASE DE DONNÉES — SESSIONS</h2>
+    <p>
+      La session utilise <code>sessionStorage</code> (pas localStorage) afin que la session expire
+      automatiquement à la fermeture de l'onglet.
+    </p>
+    <pre><code>// Créer une session (à la connexion)
+DB.setSession(user) {
+  sessionStorage.setItem('nexus_session', JSON.stringify(user));
+}
+
+// Lire la session
+DB.getSession() {
+  return JSON.parse(sessionStorage.getItem('nexus_session') || 'null');
+}
+
+// Détruire la session (déconnexion)
+DB.clearSession() {
+  sessionStorage.removeItem('nexus_session');
+}</code></pre>
+    <h4>VÉRIFICATION AU CHARGEMENT</h4>
+    <pre><code>// En bas du script, à l'initialisation :
+let currentUser = DB.getSession();
+if (currentUser) {
+  showDashboard(); // L'utilisateur est déjà connecté
+}</code></pre>
+  </section>
+
+  <!-- DB SECURITE -->
+  <section id="db-securite">
+    <h2>BASE DE DONNÉES — SÉCURITÉ</h2>
+    <div class="info-box warn">
+      <p>⚠️ <strong>Important</strong> : Pour une plateforme en production avec données sensibles, il faut un backend réel
+      (Node.js/PHP + MySQL/PostgreSQL + bcrypt). Le localStorage est suffisant pour une communauté GTA RP
+      en accès semi-privé.</p>
+    </div>
+    <h3>Encodage des mots de passe</h3>
+    <pre><code>// Stockage : encodage base64 (obfuscation)
+password: btoa(data.password)     // "admin123" → "YWRtaW4xMjM="
+
+// Vérification à la connexion
+if (atob(user.password) !== inputPassword) { /* refus */ }</code></pre>
+    <h3>Protection XSS</h3>
+    <pre><code>// Toutes les données utilisateur affichées passent par escHtml()
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}</code></pre>
+    <h3>Pour une vraie sécurité — Backend recommandé</h3>
+    <pre><code>// Backend Node.js + Express (exemple)
+const bcrypt = require('bcrypt');
+const SALT   = 12;
+
+// Inscription
+app.post('/register', async (req, res) => {
+  const hash = await bcrypt.hash(req.body.password, SALT);
+  await db.query('INSERT INTO users (...) VALUES (...)', [hash, ...]);
+});
+
+// Connexion
+app.post('/login', async (req, res) => {
+  const user = await db.query('SELECT * FROM users WHERE username=?');
+  const ok   = await bcrypt.compare(req.body.password, user.password);
+  if (ok) req.session.userId = user.id;
+});</code></pre>
+  </section>
+
+  <hr/>
+
+  <!-- JS AUTH -->
+  <section id="js-auth">
+    <h2>JAVASCRIPT — AUTHENTIFICATION</h2>
+    <h3>Connexion — handleLogin()</h3>
+    <pre><code>function handleLogin() {
+  const username = document.getElementById('login-username').value.trim();
+  const password = document.getElementById('login-password').value;
+
+  // 1. Validation des champs
+  if (!username || !password) return showAlert(errEl, '⚠ Champs vides', 'error');
+
+  // 2. Vérification contre la base de données
+  const user = DB.getUserByUsername(username);
+  if (!user || atob(user.password) !== password) {
+    return showAlert(errEl, '✕ IDENTIFIANTS INCORRECTS', 'error');
+  }
+
+  // 3. Création session + redirection
+  DB.setSession(user);
+  currentUser = user;
+  showDashboard();
+}</code></pre>
+    <h3>Inscription — handleRegister()</h3>
+    <pre><code>function handleRegister() {
+  // Validations successives :
+  // ✓ Champs obligatoires (username, password, faction)
+  // ✓ Longueur username (min 3 chars)
+  // ✓ Correspondance passwords
+  // ✓ Longueur password (min 6 chars)
+  // ✓ Username déjà pris (DB.getUserByUsername)
+
+  if (DB.getUserByUsername(username))
+    return showAlert(errEl, '✕ Ce pseudo est déjà utilisé.', 'error');
+
+  DB.createUser({ username, ic, password, faction, discord });
+  showAlert(sucEl, '✔ Compte créé !', 'success');
+}</code></pre>
+    <h3>Déconnexion — handleLogout()</h3>
+    <pre><code>function handleLogout() {
+  DB.clearSession();        // vide sessionStorage
+  currentUser = null;       // reset variable globale
+  showPage('page-login');   // retour login
+  showToast('Session fermée.');
+}</code></pre>
+  </section>
+
+  <!-- JS NAVIGATION -->
+  <section id="js-navigation">
+    <h2>JAVASCRIPT — NAVIGATION</h2>
+    <pre><code>// Afficher le dashboard et peupler les données
+function showDashboard() {
+  currentUser = DB.getSession() || currentUser;
+  showPage('page-dashboard');
+
+  // Mettre à jour la navbar
+  document.getElementById('nav-username').textContent = currentUser.username.toUpperCase();
+  document.getElementById('nav-avatar').textContent   = currentUser.username[0].toUpperCase();
+
+  // Afficher bouton Admin si admin
+  document.getElementById('admin-nav-btn').style.display =
+    currentUser.role === 'admin' ? '' : 'none';
+
+  refreshStats();
+  loadProfilePage();
+}
+
+// Naviguer entre les sous-sections
+function navTo(section, btn) {
+  // Désactiver tous les boutons nav
+  document.querySelectorAll('.nav-link').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  // Cacher toutes les subpages
+  document.querySelectorAll('.subpage').forEach(s => s.classList.remove('active'));
+  document.getElementById('sub-' + section).classList.add('active');
+
+  // Actions spécifiques par section
+  if (section === 'membres') renderMembers();
+  if (section === 'admin')   renderAdminUsers();
+}</code></pre>
+  </section>
+
+  <!-- JS PROFIL -->
+  <section id="js-profil">
+    <h2>JAVASCRIPT — PROFIL</h2>
+    <pre><code>// Charger les données dans la page profil
+function loadProfilePage() {
+  const u = DB.getUserByUsername(currentUser.username);
+  document.getElementById('prof-name-display').textContent = u.username.toUpperCase();
+  document.getElementById('psr-ic').textContent     = u.ic      || '—';
+  document.getElementById('psr-faction').textContent = u.faction || '—';
+  // ... etc.
+
+  // Couleur du badge selon le rôle
+  const roleColors = { admin: 'gold', moderateur: 'orange', membre: 'cyan' };
+  roleBadge.style.color = `var(--neon-${roleColors[u.role]})`;
+
+  // Pré-remplir le formulaire d'édition
+  document.getElementById('edit-ic').value = u.ic || '';
+}
+
+// Sauvegarder les modifications
+function saveProfile() {
+  const ic      = document.getElementById('edit-ic').value.trim();
+  const faction = document.getElementById('edit-faction').value;
+  const discord = document.getElementById('edit-discord').value.trim();
+  const bio     = document.getElementById('edit-bio').value;
+
+  // Mettre à jour en DB
+  DB.updateUser(currentUser.username, { ic, faction, discord, bio });
+
+  // Rafraîchir le currentUser depuis la DB
+  currentUser = DB.getUserByUsername(currentUser.username);
+  DB.setSession(currentUser);
+
+  loadProfilePage();
+  showToast('✔ Profil sauvegardé.');
+}
+
+// Changer le mot de passe
+function changePassword() {
+  const oldPw = document.getElementById('old-pw').value;
+  const newPw = document.getElementById('new-pw').value;
+  const u = DB.getUserByUsername(currentUser.username);
+
+  // Vérifier l'ancien mot de passe
+  if (atob(u.password) !== oldPw) return showAlert(errEl, '✕ Ancien MDP incorrect', 'error');
+  if (newPw.length < 6) return showAlert(errEl, '⚠ Trop court', 'error');
+
+  DB.updateUser(currentUser.username, { password: btoa(newPw) });
+  showToast('✔ Mot de passe changé.');
+}</code></pre>
+  </section>
+
+  <!-- JS MEMBRES -->
+  <section id="js-membres">
+    <h2>JAVASCRIPT — MEMBRES</h2>
+    <pre><code>let factionFilter = ''; // état global du filtre actif
+
+// Filtrer par faction
+function setFactionFilter(f, btn) {
+  factionFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderMembers();
+}
+
+// Générer le tableau des membres
+function renderMembers() {
+  const query = document.getElementById('members-search').value.toLowerCase();
+  let users = DB.getUsers();
+
+  // Filtre faction
+  if (factionFilter) users = users.filter(u => u.faction?.includes(factionFilter));
+
+  // Filtre recherche textuelle
+  if (query) users = users.filter(u =>
+    u.username.toLowerCase().includes(query) ||
+    (u.ic||'').toLowerCase().includes(query)
+  );
+
+  // Générer les lignes HTML
+  const tbody = document.getElementById('members-tbody');
+  tbody.innerHTML = '';
+  users.forEach(u => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      &lt;td&gt;...avatar + username...&lt;/td&gt;
+      &lt;td&gt;${escHtml(u.ic||'—')}&lt;/td&gt;
+      &lt;td&gt;${escHtml(u.faction||'—')}&lt;/td&gt;
+      &lt;td&gt;...badge rôle coloré...&lt;/td&gt;
+    `;
+    tbody.appendChild(tr);
+  });
+}</code></pre>
+  </section>
+
+  <!-- JS ADMIN -->
+  <section id="js-admin">
+    <h2>JAVASCRIPT — PANNEAU ADMIN</h2>
+    <pre><code>// Afficher la liste des users avec actions
+function renderAdminUsers() {
+  const users = DB.getUsers();
+  users.forEach(u => {
+    // Génère un bouton RÔLE et un bouton SUPPR pour chaque user
+    // (sauf pour le compte "admin" qui ne peut pas être supprimé)
+    const isAdmin = u.username === 'admin';
+    tr.innerHTML = `
+      ...
+      &lt;td&gt;
+        &lt;button onclick="openRoleModal('${u.username}')"&gt;RÔLE&lt;/button&gt;
+        ${!isAdmin ? `&lt;button onclick="openDeleteModal('${u.username}')"&gt;SUPPR.&lt;/button&gt;` : ''}
+      &lt;/td&gt;
+    `;
+  });
+}
+
+// Modal — Changer un rôle
+function openRoleModal(username) {
+  document.getElementById('modal-role-username').value = username;
+  const u = DB.getUserByUsername(username);
+  document.getElementById('modal-role-select').value = u?.role || 'membre';
+  showModal('modal-role');
+}
+function applyRole() {
+  const username = document.getElementById('modal-role-username').value;
+  const role     = document.getElementById('modal-role-select').value;
+  DB.updateUser(username, { role });
+  closeModal('modal-role');
+  renderAdminUsers();
+}
+
+// Modal — Confirmer suppression
+function confirmDelete() {
+  const username = document.getElementById('modal-del-username').value;
+  DB.deleteUser(username);
+  closeModal('modal-delete');
+  renderAdminUsers();
+}</code></pre>
+  </section>
+
+  <!-- JS UTILS -->
+  <section id="js-utils">
+    <h2>JAVASCRIPT — UTILITAIRES</h2>
+    <pre><code>// Afficher / cacher une alerte inline
+function showAlert(el, msg, type) {
+  el.textContent = msg;
+  el.className = `alert alert-${type} show`;
+}
+function clearAlert(el) {
+  el.textContent = '';
+  el.className = 'alert';
+}
+
+// Toast notification (bas droite)
+let toastTimer;
+function showToast(msg, success = true) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'show' + (success ? '' : ' error');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.className = ''; }, 3500);
+}
+
+// Échapper le HTML pour éviter les injections XSS
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+
+// Accordion pour les règles
+function toggleRule(section) {
+  section.classList.toggle('open');
+}
+
+// Ouvrir / fermer un modal
+function showModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// Horloge en temps réel dans la status bar
+setInterval(() => {
+  document.getElementById('sb-time').textContent =
+    new Date().toLocaleTimeString('fr-FR', { hour12: false });
+}, 1000);</code></pre>
+  </section>
+
+  <hr/>
+
+  <!-- ANALYSE CHL -->
+  <section id="site-chl">
+    <h2>ANALYSE DU SITE CHL</h2>
+    <p>Le site <strong>stiorxtwitch.github.io/chl-learning</strong> (Centre Hospitalier de Liège — Formation Médicale RP)
+    utilise les mêmes techniques que NEXUS RP. Voici ses éléments clés :</p>
+    <table>
+      <thead><tr><th>Élément</th><th>Technique utilisée</th></tr></thead>
+      <tbody>
+        <tr><td>Fond sombre</td><td>Background très sombre (#000 ou similaire) + overlay scanlines CSS</td></tr>
+        <tr><td>Logo "CHL"</td><td>Orbitron ou police similaire + text-shadow néon cyan</td></tr>
+        <tr><td>"SYS.SECURE // ENCRYPTED"</td><td>Status bar fixe en haut, font-family monospace</td></tr>
+        <tr><td>"ACCÈS RESTREINT"</td><td>Texte en lettres espacées, couleur atténuée</td></tr>
+        <tr><td>Panneau de login</td><td>Border 1px solid avec glow, backdrop semi-transparent</td></tr>
+        <tr><td>Inputs stylés</td><td>Background sombre, border néon au focus, icônes ◈ et ◉</td></tr>
+        <tr><td>Bouton ACCÉDER</td><td>Outline button avec hover background léger</td></tr>
+        <tr><td>"⚠ IDENTIFIANTS INCORRECTS"</td><td>Element caché, affiché via JS avec classe CSS</td></tr>
+        <tr><td>"AUTHENTIFICATION EN COURS"</td><td>Loader affiché pendant la vérification</td></tr>
+        <tr><td>Pied de page</td><td>Texte monospace centré, très petit, couleur dim</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box tip">
+      <p>✔ NEXUS RP reprend toute l'esthétique du site CHL et l'étend avec un vrai système de comptes,
+      un dashboard multi-sections, un annuaire et un panneau admin.</p>
+    </div>
+  </section>
+
+  <!-- EVOLUTION -->
+  <section id="evolution">
+    <h2>ÉVOLUTIONS FUTURES</h2>
+    <h3>Pour passer à un vrai backend</h3>
+    <ul>
+      <li><strong>Base de données</strong> : MySQL, PostgreSQL, ou MongoDB</li>
+      <li><strong>Backend</strong> : Node.js + Express, ou PHP, ou Supabase (BaaS)</li>
+      <li><strong>Auth sécurisée</strong> : bcrypt pour les hash, JWT ou sessions serveur</li>
+      <li><strong>Hébergement</strong> : Vercel, Railway, Render (gratuit), ou VPS</li>
+    </ul>
+    <h3>Fonctionnalités à ajouter</h3>
+    <ul>
+      <li>📸 Upload d'avatar (image de profil)</li>
+      <li>💬 Système de messagerie interne</li>
+      <li>📝 Demandes d'adhésion aux factions (validation admin)</li>
+      <li>📅 Calendrier des événements RP</li>
+      <li>🔔 Système de notifications</li>
+      <li>📊 Statistiques de connexion / activité</li>
+      <li>🎖️ Système de grades interne à chaque faction</li>
+    </ul>
+  </section>
+
+  <!-- COMPTE ADMIN -->
+  <section id="compte-admin">
+    <h2>COMPTE ADMINISTRATEUR PAR DÉFAUT</h2>
+    <div class="info-box warn">
+      <p>⚠️ <strong>Changez le mot de passe immédiatement</strong> après le premier déploiement !</p>
+    </div>
+    <table>
+      <thead><tr><th>Champ</th><th>Valeur</th></tr></thead>
+      <tbody>
+        <tr><td>Username</td><td>admin</td></tr>
+        <tr><td>Password</td><td>Admin@123</td></tr>
+        <tr><td>Rôle</td><td>admin</td></tr>
+      </tbody>
+    </table>
+    <p>Ce compte est créé automatiquement par <code>DB.init()</code> au premier chargement de la page,
+    uniquement s'il n'existe pas déjà en base.</p>
+    <pre><code>DB.init() {
+  if (!this.getUserByUsername('admin')) {
+    this.createUser({ username: 'admin', password: 'Admin@123', ... });
+    this.updateUser('admin', { role: 'admin' });
+  }
+}</code></pre>
+  </section>
+
+</main>
+</div>
+</body>
+</html>
